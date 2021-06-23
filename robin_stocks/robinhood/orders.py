@@ -1,6 +1,6 @@
 """Contains all functions for placing orders for stocks, options, and crypto."""
 from uuid import uuid4
-
+from datetime import date, timedelta
 from robin_stocks.robinhood.crypto import *
 from robin_stocks.robinhood.helper import *
 from robin_stocks.robinhood.profiles import *
@@ -131,6 +131,23 @@ def get_option_order_info(order_id):
     """
     url = option_orders_url(order_id)
     data = request_get(url)
+    return data
+
+
+@login_required
+def get_recent_option_order_info():
+    """Returns the information for a single option order.
+
+    :param order_id: The ID associated with the option order.
+    :type order_id: str
+    :returns: Returns a list of dictionaries of key/value pairs for the order.
+
+    """
+    last_date = date.today() - timedelta(days=1)
+    last_date_format = last_date.strftime('%Y-%m-%d')
+    url = option_orders_url()
+    payload = {'updated_at[gte]': last_date_format}
+    data = request_get(url,'pagination',payload=payload)
     return data
 
 
